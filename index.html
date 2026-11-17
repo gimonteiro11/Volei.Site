@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Interativo - Sistema 5:1 de Voleibol</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        p.subtitle {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /* Controles de Rotação */
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-rotacao {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-rotacao:hover, .btn-rotacao.active {
+            background-color: #0056b3;
+        }
+
+        /* Estrutura da Quadra de Vôlei */
+        .court-container {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            background-color: #f0932b; /* Cor da quadra */
+            border: 4px solid #fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Linha Central da Rede */
+        .court-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 4px;
+            height: 100%;
+            background-color: white;
+            transform: translateX(-50%);
+        }
+
+        /* Linha dos 3 metros (Ataque) */
+        .attack-line-left {
+            position: absolute;
+            left: 33.33%;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            border-left: 2px dashed rgba(255, 255, 255, 0.7);
+        }
+
+        .attack-line-right {
+            position: absolute;
+            right: 33.33%;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            border-right: 2px dashed rgba(255, 255, 255, 0.7);
+        }
+
+        /* Posicionamento dos Jogadores */
+        .player {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            background-color: #fff;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .player span {
+            font-size: 9px;
+            color: #555;
+        }
+
+        /* Coordenadas padrão para a Rotação 1 (Exemplo visual) */
+        #pos-4 { top: 20%; left: 20%; }
+        #pos-3 { top: 45%; left: 20%; }
+        #pos-2 { top: 75%; left: 20%; }
+        #pos-5 { top: 20%; left: 70%; }
+        #pos-6 { top: 45%; left: 70%; }
+        #pos-1 { top: 75%; left: 70%; }
+
+        /* Painel de Informações */
+        .info-panel {
+            margin-top: 20px;
+            width: 600px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Simulador do Sistema 5:1</h1>
+    <p class="subtitle">Clique nos botões abaixo para alternar entre as posições de rotação.</p>
+
+    <!-- Botões de Navegação das Rotações -->
+    <div class="controls">
+        <button class="btn-rotacao active" onclick="mudarRotacao(1)">Rotação 1</button>
+        <button class="btn-rotacao" onclick="mudarRotacao(2)">Rotação 2</button>
+        <button class="btn-rotacao" onclick="mudarRotacao(3)">Rotação 3</button>
+        <button class="btn-rotacao" onclick="mudarRotacao(4)">Rotação 4</button>
+        <button class="btn-rotacao" onclick="mudarRotacao(5)">Rotação 5</button>
+        <button class="btn-rotacao" onclick="mudarRotacao(6)">Rotação 6</button>
+    </div>
+
+    <!-- Representação Visual da Quadra -->
+    <div class="court-container">
+        <div class="attack-line-left"></div>
+        <div class="attack-line-right"></div>
+
+        <!-- Jogadores (IDs correspondem às posições da regra de voleibol 1 a 6) -->
+        <div class="player" id="pos-4">4 <span>P1</span></div>
+        <div class="player" id="pos-3">3 <span>C1</span></div>
+        <div class="player" id="pos-2">2 <span>O</span></div>
+        <div class="player" id="pos-5">5 <span>P2</span></div>
+        <div class="player" id="pos-6">6 <span>L</span></div>
+        <div class="player" id="pos-1">1 <span>Lev</span></div>
+    </div>
+
+    <!-- Seção de Descrição Dinâmica -->
+    <div class="info-panel" id="info-content">
+        <h3>Rotação 1</h3>
+        <p>Nesta rotação, o Levantador está na posição 1 (fundo/saque), permitindo infiltrações rápidas após a batida na bola.</p>
+    </div>
+
+    <script>
+        // Exemplo simples de interatividade em JavaScript para atualizar as legendas
+        function mudarRotacao(num) {
+            // Remove classe ativa dos botões
+            document.querySelectorAll('.btn-rotacao').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Atualiza texto explicativo básico
+            const info = document.getElementById('info-content');
+            info.innerHTML = `<h3>Rotação ${num}</h3><p>Descrição tática detalhada da rotação ${num} no sistema 5:1, focando no posicionamento de infiltração do levantador e cobertura defensiva.</p>`;
+        }
+    </script>
+
+</body>
+</html>
