@@ -3,184 +3,397 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador Interativo - Sistema 5:1 de Voleibol</title>
+    <title>Guia Interativo Rodagem 5x1 - Voleibol</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: #333;
             display: flex;
             flex-direction: column;
             align-items: center;
+            padding: 20px;
         }
 
-        h1 {
-            color: #333;
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            color: #1a73e8;
             margin-bottom: 5px;
         }
 
-        p.subtitle {
+        header p {
             color: #666;
-            margin-bottom: 20px;
+            font-size: 1.1rem;
         }
 
-        /* Controles de Rotação */
-        .controls {
-            margin-bottom: 20px;
+        .main-wrapper {
             display: flex;
-            gap: 10px;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            max-width: 1000px;
+            width: 100%;
         }
 
-        .btn-rotacao {
-            padding: 10px 15px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+        /* Painel de Configuração de Nomes */
+        .config-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 280px;
+            max-width: 320px;
+        }
+
+        .config-panel h2 {
+            font-size: 1.1rem;
+            color: #1a73e8;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #f0f2f5;
+            padding-bottom: 6px;
+        }
+
+        .input-group {
+            margin-bottom: 10px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
             font-weight: bold;
-            transition: background 0.3s;
+            color: #555;
+            margin-bottom: 3px;
         }
 
-        .btn-rotacao:hover, .btn-rotacao.active {
-            background-color: #0056b3;
+        .input-group input {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 0.9rem;
         }
 
-        /* Estrutura da Quadra de Vôlei */
+        /* Área da Quadra e Botões */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            flex: 2;
+            min-width: 320px;
+            max-width: 500px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .controls button {
+            padding: 8px 14px;
+            border: none;
+            background-color: #e4e6eb;
+            color: #333;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .controls button.active {
+            background-color: #1a73e8;
+            color: white;
+        }
+
+        /* Estilização da Quadra */
         .court-container {
             position: relative;
-            width: 600px;
-            height: 400px;
-            background-color: #f0932b; /* Cor da quadra */
+            width: 100%;
+            aspect-ratio: 1 / 1.2;
+            background-color: #e67e22; /* Cor de quadra de vôlei */
             border: 4px solid #fff;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            border-radius: 4px;
+            margin-bottom: 15px;
         }
 
-        /* Linha Central da Rede */
-        .court-container::after {
-            content: '';
+        .net {
             position: absolute;
             top: 0;
-            left: 50%;
-            width: 4px;
-            height: 100%;
-            background-color: white;
-            transform: translateX(-50%);
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background-color: #ffffff;
+            border-bottom: 2px dashed #333;
         }
 
-        /* Linha dos 3 metros (Ataque) */
-        .attack-line-left {
+        .attack-line {
             position: absolute;
-            left: 33.33%;
-            top: 0;
-            width: 2px;
-            height: 100%;
-            border-left: 2px dashed rgba(255, 255, 255, 0.7);
+            top: 35%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: rgba(255, 255, 255, 0.7);
         }
 
-        .attack-line-right {
-            position: absolute;
-            right: 33.33%;
-            top: 0;
-            width: 2px;
-            height: 100%;
-            border-right: 2px dashed rgba(255, 255, 255, 0.7);
-        }
-
-        /* Posicionamento dos Jogadores */
+        /* Jogadores */
         .player {
             position: absolute;
-            width: 45px;
-            height: 45px;
-            background-color: #fff;
+            width: 65px;
+            height: 65px;
+            background-color: #2c3e50;
+            color: white;
             border-radius: 50%;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            font-size: 11px;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            transform: translate(-50%, -50%);
+            transition: all 0.4s ease;
+            border: 2px solid white;
+            padding: 4px;
+        }
+
+        .player .player-name {
+            font-size: 0.65rem;
             font-weight: bold;
-            color: #333;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            cursor: pointer;
-            transition: all 0.3s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 55px;
         }
 
-        .player span {
-            font-size: 9px;
-            color: #555;
+        .player .player-pos {
+            font-size: 0.6rem;
+            opacity: 0.85;
+            background: rgba(0,0,0,0.3);
+            padding: 1px 4px;
+            border-radius: 3px;
+            margin-top: 2px;
         }
 
-        /* Coordenadas padrão para a Rotação 1 (Exemplo visual) */
-        #pos-4 { top: 20%; left: 20%; }
-        #pos-3 { top: 45%; left: 20%; }
-        #pos-2 { top: 75%; left: 20%; }
-        #pos-5 { top: 20%; left: 70%; }
-        #pos-6 { top: 45%; left: 70%; }
-        #pos-1 { top: 75%; left: 70%; }
+        /* Descrição da Rotação */
+        .info-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #1a73e8;
+            padding: 12px;
+            width: 100%;
+            border-radius: 4px;
+        }
 
-        /* Painel de Informações */
-        .info-panel {
-            margin-top: 20px;
-            width: 600px;
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        .info-box h3 {
+            margin-bottom: 6px;
+            color: #1a73e8;
+            font-size: 1rem;
+        }
+
+        .info-box p {
+            font-size: 0.85rem;
+            line-height: 1.4;
+            color: #444;
         }
     </style>
 </head>
 <body>
 
-    <h1>Simulador do Sistema 5:1</h1>
-    <p class="subtitle">Clique nos botões abaixo para alternar entre as posições de rotação.</p>
+    <header>
+        <h1>Rodagem do Sistema 5x1</h1>
+        <p>Personalize os nomes das atletas e estude cada rotação</p>
+    </header>
 
-    <!-- Botões de Navegação das Rotações -->
-    <div class="controls">
-        <button class="btn-rotacao active" onclick="mudarRotacao(1)">Rotação 1</button>
-        <button class="btn-rotacao" onclick="mudarRotacao(2)">Rotação 2</button>
-        <button class="btn-rotacao" onclick="mudarRotacao(3)">Rotação 3</button>
-        <button class="btn-rotacao" onclick="mudarRotacao(4)">Rotação 4</button>
-        <button class="btn-rotacao" onclick="mudarRotacao(5)">Rotação 5</button>
-        <button class="btn-rotacao" onclick="mudarRotacao(6)">Rotação 6</button>
-    </div>
+    <div class="main-wrapper">
+        <!-- Painel para personalizar os nomes -->
+        <div class="config-panel">
+            <h2>Nomes das Atletas</h2>
+            <div class="input-group">
+                <label>Levantador(a) (L):</label>
+                <input type="text" id="name-L" value="Bruna" oninput="updateCourt()">
+            </div>
+            <div class="input-group">
+                <label>Oposto (O):</label>
+                <input type="text" id="name-O" value="Ana" oninput="updateCourt()">
+            </div>
+            <div class="input-group">
+                <label>Ponteiro 1 (P1):</label>
+                <input type="text" id="name-P1" value="Carla" oninput="updateCourt()">
+            </div>
+            <div class="input-group">
+                <label>Ponteiro 2 (P2):</label>
+                <input type="text" id="name-P2" value="Julia" oninput="updateCourt()">
+            </div>
+            <div class="input-group">
+                <label>Central 1 (C1):</label>
+                <input type="text" id="name-C1" value="Mari" oninput="updateCourt()">
+            </div>
+            <div class="input-group">
+                <label>Central 2 (C2):</label>
+                <input type="text" id="name-C2" value="Bea" oninput="updateCourt()">
+            </div>
+        </div>
 
-    <!-- Representação Visual da Quadra -->
-    <div class="court-container">
-        <div class="attack-line-left"></div>
-        <div class="attack-line-right"></div>
+        <!-- Área Central da Quadra -->
+        <div class="container">
+            <!-- Botões de Rotação -->
+            <div class="controls" id="rotation-buttons">
+                <button onclick="setRotation(1)" class="active" id="btn-1">P1</button>
+                <button onclick="setRotation(2)" id="btn-2">P2</button>
+                <button onclick="setRotation(3)" id="btn-3">P3</button>
+                <button onclick="setRotation(4)" id="btn-4">P4</button>
+                <button onclick="setRotation(5)" id="btn-5">P5</button>
+                <button onclick="setRotation(6)" id="btn-6">P6</button>
+            </div>
 
-        <!-- Jogadores (IDs correspondem às posições da regra de voleibol 1 a 6) -->
-        <div class="player" id="pos-4">4 <span>P1</span></div>
-        <div class="player" id="pos-3">3 <span>C1</span></div>
-        <div class="player" id="pos-2">2 <span>O</span></div>
-        <div class="player" id="pos-5">5 <span>P2</span></div>
-        <div class="player" id="pos-6">6 <span>L</span></div>
-        <div class="player" id="pos-1">1 <span>Lev</span></div>
-    </div>
+            <!-- Desenho da Quadra -->
+            <div class="court-container" id="court">
+                <div class="net"></div>
+                <div class="attack-line"></div>
+                <!-- Jogadores injetados via JS -->
+            </div>
 
-    <!-- Seção de Descrição Dinâmica -->
-    <div class="info-panel" id="info-content">
-        <h3>Rotação 1</h3>
-        <p>Nesta rotação, o Levantador está na posição 1 (fundo/saque), permitindo infiltrações rápidas após a batida na bola.</p>
+            <!-- Explicação -->
+            <div class="info-box" id="info-text">
+                <h3 id="info-title">Rotação 1</h3>
+                <p id="info-desc">Carregando...</p>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Exemplo simples de interatividade em JavaScript para atualizar as legendas
-        function mudarRotacao(num) {
-            // Remove classe ativa dos botões
-            document.querySelectorAll('.btn-rotacao').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+        let currentRot = 1;
 
-            // Atualiza texto explicativo básico
-            const info = document.getElementById('info-content');
-            info.innerHTML = `<h3>Rotação ${num}</h3><p>Descrição tática detalhada da rotação ${num} no sistema 5:1, focando no posicionamento de infiltração do levantador e cobertura defensiva.</p>`;
+        // Estrutura das 6 rotações do 5x1 básico mapeando as funções nas posições da quadra
+        const rotationsData = {
+            1: {
+                title: "Rotação 1 (Levantador no Fundo - Posição 1)",
+                desc: "O Levantador saca na posição 1. Após o saque, ele infiltra para a zona de ataque entre as posições 2 e 3. Os 3 atacantes formam a rede.",
+                slots: [
+                    { roleKey: "L", posName: "Posição 1", x: 25, y: 80 },
+                    { roleKey: "P1", posName: "Posição 6", x: 50, y: 80 },
+                    { roleKey: "C1", posName: "Posição 5", x: 75, y: 80 },
+                    { roleKey: "O", posName: "Posição 4", x: 20, y: 15 },
+                    { roleKey: "C2", posName: "Posição 3", x: 50, y: 15 },
+                    { roleKey: "P2", posName: "Posição 2", x: 80, y: 15 }
+                ]
+            },
+            2: {
+                title: "Rotação 2 (Levantador na Rede - Posição 2)",
+                desc: "O Levantador está na rede (posição 2). Ele já começa na sua zona natural de distribuição, permitindo um jogo mais rápido desde o início.",
+                slots: [
+                    { roleKey: "P1", posName: "Posição 1", x: 25, y: 80 },
+                    { roleKey: "C1", posName: "Posição 6", x: 50, y: 80 },
+                    { roleKey: "O", posName: "Posição 5", x: 75, y: 80 },
+                    { roleKey: "L", posName: "Posição 4", x: 20, y: 15 },
+                    { roleKey: "P2", posName: "Posição 3", x: 50, y: 15 },
+                    { roleKey: "C2", posName: "Posição 2", x: 80, y: 15 }
+                ]
+            },
+            3: {
+                title: "Rotação 3 (Levantador na Rede - Posição 3)",
+                desc: "O Levantador desloca-se para o meio da rede (posição 3). Excelente rotação com opções de ataque fortes pelas duas pontas e pelo meio.",
+                slots: [
+                    { roleKey: "C1", posName: "Posição 1", x: 25, y: 80 },
+                    { roleKey: "O", posName: "Posição 6", x: 50, y: 80 },
+                    { roleKey: "P2", posName: "Posição 5", x: 75, y: 80 },
+                    { roleKey: "C2", posName: "Posição 4", x: 20, y: 15 },
+                    { roleKey: "L", posName: "Posição 3", x: 50, y: 15 },
+                    { roleKey: "P1", posName: "Posição 2", x: 80, y: 15 }
+                ]
+            },
+            4: {
+                title: "Rotação 4 (Levantador na Rede - Posição 4)",
+                desc: "O Levantador está na ponta esquerda (posição 4). Ele se desloca rapidamente para a posição de distribuição logo após o toque na bola.",
+                slots: [
+                    { roleKey: "O", posName: "Posição 1", x: 25, y: 80 },
+                    { roleKey: "P2", posName: "Posição 6", x: 50, y: 80 },
+                    { roleKey: "C2", posName: "Posição 5", x: 75, y: 80 },
+                    { roleKey: "P1", posName: "Posição 4", x: 20, y: 15 },
+                    { roleKey: "C1", posName: "Posição 3", x: 50, y: 15 },
+                    { roleKey: "L", posName: "Posição 2", x: 80, y: 15 }
+                ]
+            },
+            5: {
+                title: "Rotação 5 (Levantador no Fundo - Posição 5)",
+                desc: "O Levantador está no fundo esquerdo (posição 5). É preciso atenção na linha de passe para permitir a infiltração sem faltas de posição.",
+                slots: [
+                    { roleKey: "P2", posName: "Posição 1", x: 25, y: 80 },
+                    { roleKey: "C2", posName: "Posição 6", x: 50, y: 80 },
+                    { roleKey: "L", posName: "Posição 5", x: 75, y: 80 },
+                    { roleKey: "O", posName: "Posição 4", x: 20, y: 15 },
+                    { roleKey: "P1", posName: "Posição 3", x: 50, y: 15 },
+                    { roleKey: "C1", posName: "Posição 2", x: 80, y: 15 }
+                ]
+            },
+            6: {
+                title: "Rotação 6 (Levantador no Fundo - Posição 6)",
+                desc: "O Levantador está no fundo central (posição 6). No momento do saque adversário, ele aguarda atrás do jogador da rede para infiltrar com liberdade.",
+                slots: [
+                    { roleKey: "C2", posName: "Posição 1", x: 25, y: 80 },
+                    { roleKey: "L", posName: "Posição 6", x: 50, y: 80 },
+                    { roleKey: "P1", posName: "Posição 5", x: 75, y: 80 },
+                    { roleKey: "P2", posName: "Posição 4", x: 20, y: 15 },
+                    { roleKey: "C1", posName: "Posição 3", x: 50, y: 15 },
+                    { roleKey: "O", posName: "Posição 2", x: 80, y: 15 }
+                ]
+            }
+        };
+
+        function setRotation(rotNum) {
+            currentRot = rotNum;
+            document.querySelectorAll('.controls button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${rotNum}`).classList.add('active');
+            updateCourt();
         }
-    </script>
 
+        function updateCourt() {
+            const data = rotationsData[currentRot];
+            
+            // Atualizar textos
+            document.getElementById('info-title').innerText = data.title;
+            document.getElementById('info-desc').innerText = data.desc;
+
+            const court = document.getElementById('court');
+            // Remove jogadores antigos mantendo rede e linha de ataque
+            court.querySelectorAll('.player').forEach(p => p.remove());
+
+            // Renderizar novos jogadores com os nomes personalizados
+            data.slots.forEach(slot => {
+                const customName = document.getElementById(`name-${slot.roleKey}`).value || slot.roleKey;
+
+                const playerDiv = document.createElement('div');
+                playerDiv.className = 'player';
+                playerDiv.style.left = `${slot.x}%`;
+                playerDiv.style.top = `${slot.y}%`;
+                
+                // Nome da atleta em cima, nome da posição embaixo
+                playerDiv.innerHTML = `
+                    <span class="player-name" title="${customName}">${customName}</span>
+                    <span class="player-pos">${slot.posName}</span>
+                `;
+                court.appendChild(playerDiv);
+            });
+        }
+
+        // Inicializar na carga da página
+        window.onload = () => setRotation(1);
+    </script>
 </body>
 </html>
